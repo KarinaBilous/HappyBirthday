@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SECURE FINAL</title>
+
+<style>
+  :root{
+    --bg:#071018;
+    --panel:#0d1720;
+    --accent:#2be07b;
+    --muted:#8aa0a6;
+  }
+
+  html,body{
+    margin:0;
+    padding:0;
+    height:85em;
+    font-family:"Courier New",monospace;
+    background:linear-gradient(180deg,#031018,#071824);
+  }
+
+  .wrap{
+    height:100%; 
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding:20px;
+    position:relative;
+    box-sizing:border-box;
+  }
+
+  .hero-img{
+    border-radius:1em;
+    width:50%;
+    max-width:260px;
+    height:auto;
+    margin-bottom:15px;
+    z-index:5;
+  }
+
+  .terminal{
+    width:30em; 
+    max-width:95%;
+    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+    border:1px solid rgba(43,224,123,0.1);
+    box-shadow:0 20px 60px rgba(2,8,12,0.6);
+    border-radius:12px;
+    padding:24px;
+    z-index:5;
+  }
+
+  .header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .led{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+  .title{color:var(--muted);font-size:13px;letter-spacing:1px;}
+
+  .panel{
+    background:linear-gradient(180deg,rgba(8,22,30,0.6),rgba(5,14,20,0.6));
+    padding:18px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);
+  }
+
+  .text{
+    color:#bfeee0;font-size:15px;line-height:1.45;
+    white-space:pre-wrap;margin-bottom:18px;
+  }
+
+  .counter{
+    color:#a9ffd6;
+    font-size:16px;
+    font-weight:700;
+    margin-top:10px;
+    text-align:center;
+  }
+
+  .question{
+    margin-bottom:18px;
+    margin: 2.5em 0;
+  }
+
+  .question label{
+    color:#bfeee0;font-size:15px;line-height:1.45;
+    white-space:pre-wrap;margin-bottom:18px;
+  }
+
+  .question input{
+    width:75%;
+    margin: 0 0 1.5em 0;
+    padding:10px;
+    background:var(--glass);
+    border:1px solid rgba(255,255,255,0.05);
+    border-radius:6px;
+    font-size:15px;
+    color:#e6fff5;
+    outline:none;
+    font-family: "Courier New", Courier, monospace;
+    margin-top: 1.2em;
+  }
+
+  button.check{
+    padding:12px 18px;
+    font-family: "Courier New", Courier, monospace;
+    border-radius:8px;
+    border:none;
+    background:var(--accent);
+    color:#042218;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(43,224,123,0.08);
+    font-size:15px;
+  }
+
+  .heart{
+    position:fixed;
+    top:100vh;
+    font-size:32px;
+    cursor:pointer;
+    user-select:none;
+    animation: fly linear infinite;
+    z-index:2;
+  }
+
+  @keyframes fly{
+    0%{transform:translateY(0);}
+    100%{transform:translateY(-130vh);}
+  }
+
+  .reveal{
+    margin-top:20px;
+    padding:16px;
+    border-radius:8px;
+    background:linear-gradient(90deg, rgba(43,224,123,0.04), rgba(43,224,123,0.02));
+    color:#e6fff5;
+    display:none;
+  }
+
+  .final-hint{
+  margin-top:20px;
+  padding:16px;
+  border-radius:8px;
+  background:linear-gradient(90deg, rgba(43,224,123,0.05), rgba(43,224,123,0.03));
+  color:#e6fff5;
+  display:none;
+  font-size:15px;
+  line-height:1.45;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<img src="images/love.png" class="hero-img">
+
+<div class="terminal">
+  <div class="header">
+    <div class="led"></div>
+    <div class="title">SECURE / HEARTS</div>
+  </div>
+
+  <div class="panel">
+    <div class="text">
+Ти пройшла всі випробування… майже ❤️
+
+🎯 Для фінального кроку потрібно спіймати **17 сердечок**, що літають по екрану.
+
+Після чого ти зможеш дістати свій останній подарунок 💚
+    </div>
+
+    <div class="counter">Спіймано: <span id="count">0</span> / 17</div>
+
+    <div id="done" class="reveal">
+      <p>❤️ Ти неймовірна!</p> 
+      <p>🎁 Але і це ще не все, хіхі..</p>  
+      <p>Треба дати відповідь на одне останнє питання. Це же вже точно... ** мабуть **</p>
+
+      <div class="question">
+        <label>І так, питання. В дитинстві коли ти займалась бальними танцями, твоя мама шила тобі сукні для виступу. Як вона називали стрази, які використовувала для прикрашання сукні?</label>
+        <input type="text" id="q1" placeholder="Відповідь...">
+      </div>
+
+      <button class="check" id="btnCheck">ANSWEAR</button>
+    </div>
+    <div id="hint" class="final-hint">
+  ❤️ Все.. Ти впоралась! Нехай ця річ сяє так само як сяєш ти ❤️
+Ти найкраща та найгарніша дівчина, ця річ буде дуже тобі пасувати, я впевнений на всі 100%.
+
+<p>❤️ I LOVE YOU ❤️</p>
+</div>
+
+
+  </div>
+</div>
+
+</div>
+
+<script>
+let count = 0;
+const goal = 17;
+const counter = document.getElementById("count");
+const done = document.getElementById("done");
+
+function spawnHeart(){
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.textContent = "❤️";
+
+  const size = 26 + Math.random()*18;
+  h.style.fontSize = size + "px";
+
+  h.style.left = Math.random()*90 + "vw";
+  const duration = 5 + Math.random()*6;
+  h.style.animationDuration = duration + "s";
+
+  h.onclick = () => {
+    h.remove();
+    count++;
+    counter.textContent = count;
+
+    if(count >= goal){
+      done.style.display = "block";
+    }
+  };
+
+  document.body.appendChild(h);
+
+  setTimeout(() => h.remove(), duration*1000);
+}
+
+setInterval(spawnHeart, 650);
+
+const btnCheck = document.getElementById("btnCheck");
+
+const answers = {
+    q1: "камні сваровскі"
+};
+
+function checkAll() {
+    let incorrect = [];
+    const hint = document.getElementById("hint");
+
+    for (let id in answers) {
+        const inp = document.getElementById(id);
+        const val = inp.value.trim().toLowerCase();
+
+        if (val !== answers[id]) {
+            incorrect.push(id.replace("q",""));
+        }
+    }
+
+    if (incorrect.length === 0) {
+        hint.style.display = "block";
+    } else {
+        hint.style.display = "none";
+    }
+}
+
+
+btnCheck.onclick = checkAll;
+
+</script>
+
+</body>
+</html>

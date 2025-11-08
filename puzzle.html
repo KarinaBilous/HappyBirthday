@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SECURE PUZZLE</title>
+<style>
+  :root{
+    --bg:#071018;
+    --panel:#0d1720;
+    --accent:#2be07b;
+    --muted:#8aa0a6;
+    --glass: rgba(255,255,255,0.03);
+
+    --puzzle-width: 300px;
+
+    --img-w: 300;
+    --img-h: 450;
+
+    --puzzle-height: calc(var(--puzzle-width) * (var(--img-h) / var(--img-w)));
+
+    --cell-w: calc(var(--puzzle-width) / 3);
+    --cell-h: calc(var(--puzzle-height) / 3);
+  }
+
+  html,body{
+    height:90em;margin:0;font-family:"Courier New",monospace;
+    background:linear-gradient(180deg,#031018,#071824);
+  }
+
+  .wrap{
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding:24px;
+    gap:1em;
+    position:relative;
+    box-sizing:border-box;
+  }
+
+  .hero-img{
+    text-align:center;
+    border-radius:1em;
+    max-width:50%;
+    display:block;
+    margin:0 auto 0;
+    height: auto;
+  }
+
+  .terminal{
+    width:30em; max-width:95%;
+    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+    border:1px solid rgba(43,224,123,0.1);
+    box-shadow:0 20px 60px rgba(2,8,12,0.6);
+    border-radius:12px;
+    padding:26px;
+  }
+  .header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .led{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+  .title{color:var(--muted);font-size:13px;letter-spacing:1px;}
+
+  .panel{
+    background:linear-gradient(180deg,rgba(8,22,30,0.6),rgba(5,14,20,0.6));
+    padding:18px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);
+  }
+
+  .text{
+    color:#bfeee0;font-size:15px;line-height:1.45;
+    white-space:pre-wrap;margin-bottom:18px;
+  }
+
+  #puzzle{
+    width:var(--puzzle-width);
+    height:var(--puzzle-height);
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr);
+  }
+
+  .piece{
+    width:100%; height:100%;
+    background-image:url("images/puzzle.png");
+    background-size:var(--puzzle-width) var(--puzzle-height);
+    cursor:grab;
+  }
+
+  .successMsg{
+    margin-top:20px;color:#a9ffd6;font-weight:700;
+    text-align:center;font-size:16px;display:none;
+  }
+
+  .reveal{
+    margin-top:20px;
+    padding:16px;
+    border-radius:8px;
+    background:linear-gradient(90deg, rgba(43,224,123,0.04), rgba(43,224,123,0.02));
+    color:#e6fff5;
+    display:none;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<img src="images/secret.png" alt="Фото" class="hero-img">
+
+  <div class="terminal">
+    <div class="header">
+      <div class="led"></div>
+      <div class="title">SECURE / PUZZLE</div>
+    </div>
+
+    <div class="panel">
+      <div class="text">
+✅ Ми точно впевнились що ти Аліна, твоя головна задача - отримати свій подарунок!
+
+🎁Але не все так просто, аби далі відкрити подарунок треба виконати наступне завдання!
+
+** Збери пазл який розташований нижче **
+
+      </div>
+
+      <div id="puzzle"></div>
+      <div id="done" class="reveal"><p>✅ Yehh... В тебе вийшло!</p>
+<p>🎁Можеш підняти перегородку! Нехай це завжди тобі нагадує про мене та життя було таким ж солодким, як ці цукерки!</p>
+❌Але далі нічого не чіпай, тикай <a href="final.html" style="color:#FFFFFF;">сюди</a>, аби продовжити відкриття подарунку!
+     </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const puzzle = document.getElementById("puzzle");
+const done = document.getElementById("done");
+
+let pieces = [];
+let selected = null;
+
+for (let i = 0; i < 9; i++) {
+  const div = document.createElement("div");
+  div.className = "piece";
+  div.draggable = true;
+
+  const col = i % 3;
+  const row = Math.floor(i / 3);
+
+  div.style.backgroundPosition = 
+    `${-col * 100}% ${-row * 100}%`;
+
+  div.dataset.index = i;
+  pieces.push(div);
+}
+
+pieces.sort(() => Math.random() - 0.5).forEach(p => puzzle.appendChild(p));
+
+let dragItem = null;
+
+puzzle.addEventListener("dragstart", e => {
+  dragItem = e.target;
+});
+puzzle.addEventListener("dragover", e => e.preventDefault());
+
+puzzle.addEventListener("drop", e => {
+  e.preventDefault();
+  if (!e.target.classList.contains("piece")) return;
+
+  swapPieces(dragItem, e.target);
+  check();
+});
+
+puzzle.addEventListener("click", e => {
+  if (!e.target.classList.contains("piece")) return;
+
+  if (!selected) {
+    selected = e.target;
+    e.target.style.outline = "2px solid var(--accent)";
+  } else {
+    selected.style.outline = "none";
+
+    if (selected !== e.target) {
+      swapPieces(selected, e.target);
+      check();
+    }
+    selected = null;
+  }
+});
+
+function swapPieces(a, b) {
+  const tmp = document.createElement("div");
+
+  puzzle.replaceChild(tmp, a);
+  puzzle.replaceChild(a, b);
+  puzzle.replaceChild(b, tmp);
+}
+
+function check() {
+  const items = [...puzzle.children];
+  const ok = items.every((el, index) => el.dataset.index == index);
+
+  if (ok) {
+    done.style.display = "block";
+  }
+}
+</script>
+
+</body>
+</html>

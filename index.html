@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SECURE ACCESS</title>
+<style>
+  :root{
+    --bg:#071018;
+    --panel:#0d1720;
+    --accent:#2be07b;
+    --muted:#8aa0a6;
+    --glass: rgba(255,255,255,0.03);
+  }
+  html,body{height:100%;margin:0;font-family: "Courier New", Courier, monospace;background:linear-gradient(180deg,#031018 0%, #071824 100%);}
+  .wrap{
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:2em;
+    gap:1em;
+    position:relative;
+    box-sizing:border-box;
+  }
+  .terminal{
+    width:30em; max-width:95%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(43,224,123,0.08);
+    box-shadow: 0 20px 60px rgba(2,8,12,0.6);
+    border-radius:0.75em; padding:2.2em;
+  }
+  .header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .led{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+  .title{color:var(--muted);font-size:13px;letter-spacing:1px}
+  .panel{background:linear-gradient(180deg, rgba(8,22,30,0.6), rgba(5,14,20,0.6)); padding:18px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+  .text{color:#bfeee0; font-size:15px; line-height:1.45; white-space:pre-wrap; margin-bottom:18px}
+  .hint{color:var(--muted);font-size:13px;margin-bottom:12px}
+  .input-row{display:flex;gap:1em;align-items:center}
+  input.code{
+    font-family: "Courier New", Courier, monospace; width: 10em; padding:0.5em 0.8em;border-radius:0.2em;border:0.1em solid rgba(255,255,255,0.03);
+    background:var(--glass); color: #e6fff5; font-size:16px; outline:none; box-shadow: inset 0 -6px 20px rgba(0,0,0,0.35);
+  }
+  button.go{
+    padding:12px 16px;border-radius:8px;border:none;background:var(--accent);color:#042218;font-weight:700;cursor:pointer;
+    box-shadow: 0 6px 18px rgba(43,224,123,0.08);
+  }
+  .log{margin-top:14px;color:#88cbb1;font-size:14px;min-height:22px}
+  .success{color:#a9ffd6;font-weight:700}
+  .fail{color:#ff9da6}
+  .reveal{margin-top:18px;padding:14px;border-radius:8px;background:linear-gradient(90deg, rgba(43,224,123,0.04), rgba(43,224,123,0.02)); color:#e6fff5}
+  .small{font-size:12px;color:var(--muted)}
+  .kbd{display:inline-block;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02);font-family:inherit}
+  .typing{display:inline-block; border-right:2px solid var(--accent); padding-right:6px; animation: blink 1s steps(2) infinite;}
+  @keyframes blink { 50% { border-color: transparent; } }
+  @media (max-width:520px){ .terminal{padding:18px} .text{font-size:14px} }
+
+  .hero-img{
+    text-align:center;
+    border-radius:1em;
+    max-width:50%;
+    display:block;
+    margin:0 auto 0;
+    height: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <img src="images/secret.png" alt="Фото" class="hero-img">
+
+  <div class="terminal" role="main" aria-label="Secure access terminal">
+    <div class="header">
+      <div class="led" aria-hidden="true"></div>
+      <div class="title">SECURE / PERSONAL SYSTEM</div>
+    </div>
+
+    <div class="panel">
+      <div class="text" id="mainText">
+СЕКРЕТНА ІНФОРМАЦІЯ. ЩОСЬ ДУЖЕ СХОЖЕ НА ПОДАРУНОК ДЛЯ *****.
+
+Потрібно підібрати код, аби зайти і дізнатись, що чекає в середині.
+
+** Хмм.. Спробуй підібрати цифри з якоїсь дати, їх часто використовують як паролі... **
+      </div>
+
+      <div class="input-row" aria-hidden="false">
+        <input id="codeInput" class="code" placeholder="Введіть код" inputmode="numeric" pattern="[0-9]*" aria-label="Код доступу" />
+        <button id="btnGo" class="go" type="button">ENTER</button>
+      </div>
+
+      <div id="log" class="log" role="status" aria-live="polite"></div>
+
+      <div id="secret" class="reveal" style="display:none;">
+🎁 <strong>Вітаємо!</strong> Ви відкрили 
+  <a href="indef.html" style="color:#FFFFFF;">доступ</a>.
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const input = document.getElementById('codeInput');
+    const btn = document.getElementById('btnGo');
+    const log = document.getElementById('log');
+    const secret = document.getElementById('secret');
+ 
+    const valid = new Set(['08112008','8112008']);
+
+    function checkCode() {
+      const raw = input.value || '';
+      const cleaned = raw.replace(/\D/g,'');
+      if (valid.has(cleaned)) {
+        log.textContent = 'Код правильний — доступ надано.';
+        log.classList.remove('fail');
+        log.classList.add('success');
+        secret.style.display = 'block';
+      } else {
+        log.textContent = 'Невірний код. Спробуйте ще раз.';
+        log.classList.remove('success');
+        log.classList.add('fail');
+        secret.style.display = 'none';
+      }
+    }
+
+    btn.addEventListener('click', checkCode);
+    input.addEventListener('keydown', function(e){
+      if (e.key === 'Enter') { e.preventDefault(); checkCode(); }
+    });
+
+  })();
+</script>
+
+</body>
+</html>
